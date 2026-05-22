@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
-import { addOrder } from '../data/OrderDetails';
+import { useOrders } from '../hooks/useOrders';
 
 const Cart = ({ cartItems, updateQuantity, removeFromCart }) => {
+  const { placeOrder } = useOrders();
   const navigate = useNavigate();
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
@@ -11,37 +12,34 @@ const Cart = ({ cartItems, updateQuantity, removeFromCart }) => {
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
-  const handlePlaceOrder = () => {
-    // Store order details in OrderDetails.js
-    const orderDetails = {
-      items: cartItems.map(item => ({
-        id: item.id,
-        productDisplayName: item.productDisplayName,
-        link: item.link,
-        price: item.price,
-        quantity: item.quantity,
-        baseColour: item.baseColour,
-        articleType: item.articleType,
-        usage: item.usage,
-        gender: item.gender,
-        season: item.season
-      })),
-      totalAmount: calculateSubtotal()
-    };
-    
-    // Add order to OrderDetails
-    const order = addOrder(orderDetails);
-    console.log('Order placed:', order);
+  const handlePlaceOrder = async () => {
+    // Prepare and place each order using Supabase
+    const orders = cartItems.map(item => ({
+      product_name: item.productDisplayName,
+      quantity: item.quantity,
+      total_price: item.price * item.quantity,
+      // optional product_id if needed
+      product_id: item.id,
+      image_url: item.link,
+    }));
+
+    // Place all orders sequentially (could be parallel)
+    for (const order of orders) {
+      await placeOrder(order);
+    }
+
+    console.log('Orders placed:', orders);
 
     // Show success popup
     setShowSuccessPopup(true);
-    
-    // Hide popup and navigate after 2 seconds
+
+    // Hide popup and navigate after 2 seconds, also clear cart
     setTimeout(() => {
       setShowSuccessPopup(false);
       navigate('/women'); // Redirect to CustomerHome
-      cartItems.length = 0; // Clear cart items
-      updateQuantity(0); // Reset quantity
+      // Clear cart items
+      cartItems.forEach(item => removeFromCart(item.id));
+      updateQuantity(0); // Reset quantity counter
     }, 2000);
   };
 

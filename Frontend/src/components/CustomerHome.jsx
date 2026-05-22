@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar.jsx';
 import BottomNav from '../components/BottomNav.jsx';
 import Chatbot from '../components/Chatbot.jsx';
@@ -7,6 +7,7 @@ import { contentData } from '../products.js';
 
 const CustomerHome = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [prevSlide, setPrevSlide] = useState(2);
   const [visibleThumbnails, setVisibleThumbnails] = useState([0, 1, 2]);
@@ -26,12 +27,12 @@ const CustomerHome = () => {
       const sectionSlides = isWomenSection
         ? data.women
         : isMenSection
-        ? data.men
-        : isKidsSection
-        ? data.kids
-        : isBabySection
-        ? data.baby
-        : [];
+          ? data.men
+          : isKidsSection
+            ? data.kids
+            : isBabySection
+              ? data.baby
+              : [];
       setSlides(sectionSlides);
       setCurrentSlide(0); // Reset slide on section change
       setPrevSlide(2);
@@ -49,20 +50,28 @@ const CustomerHome = () => {
       index === 0
         ? [0, 1, 2]
         : index === slides.length - 1
-        ? [slides.length - 3, slides.length - 2, slides.length - 1]
-        : [index - 1, index, index + 1];
+          ? [slides.length - 3, slides.length - 2, slides.length - 1]
+          : [index - 1, index, index + 1];
 
     setVisibleThumbnails(newVisibleThumbnails.filter((idx) => idx >= 0 && idx < slides.length));
   };
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const nextIndex = (currentSlide + 1) % slides.length;
-      handleSlideChange(nextIndex);
+      if (slides.length > 0 && currentSlide === slides.length - 1) {
+        if (isWomenSection) navigate('/men');
+        else if (isMenSection) navigate('/kids');
+        else if (isKidsSection) navigate('/baby');
+        else if (isBabySection) navigate('/women');
+        else navigate('/women');
+      } else if (slides.length > 0) {
+        const nextIndex = currentSlide + 1;
+        handleSlideChange(nextIndex);
+      }
     }, 2000);
 
     return () => clearInterval(timer);
-  }, [currentSlide, slides.length]);
+  }, [currentSlide, slides.length, isWomenSection, isMenSection, isKidsSection, isBabySection, navigate]);
 
   return (
     <div className="h-screen overflow-hidden relative">
@@ -74,13 +83,12 @@ const CustomerHome = () => {
           {slides.map((slide, index) => (
             <div
               key={index}
-              className={`absolute inset-0 w-full h-full transition-all duration-1000 ${
-                index === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-110'
-              }`}
+              className={`absolute inset-0 w-full h-full transition-all duration-1000 ${index === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-110'
+                }`}
             >
-              <img 
-                src={slide.image} 
-                alt={slide.title} 
+              <img
+                src={slide.image}
+                alt={slide.title}
                 className="w-full h-full object-cover"
                 style={{ objectPosition: 'center' }}
               />
@@ -89,23 +97,15 @@ const CustomerHome = () => {
         </div>
 
         {/* Hero Content */}
-        <div className="w-120 absolute left-20 top-1/3 transform -translate-y-1/2 z-10 text-white max-w-xl">
+        <div className="w-120 absolute left-20 top-1/3 transform -translate-y-1/2 z-10 text-black max-w-xl">
           {slides.map((slide, index) => (
             <div
               key={index}
-              className={`absolute transition-all duration-500 ${
-                currentSlide === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
+              className={`absolute transition-all duration-500 ${currentSlide === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                }`}
             >
               <h1 className="text-4xl font-bold mb-4">{slide.title}</h1>
               <p className="text-lg mb-6">{slide.description}</p>
-              <button
-                onClick={() => navigate('#')}
-                className="px-6 py-2 rounded-lg font-semibold cursor-pointer"
-                style={{ backgroundColor: slide.btnColor }}
-              >
-                Explore Now
-              </button>
             </div>
           ))}
         </div>
@@ -117,9 +117,8 @@ const CustomerHome = () => {
             .map((slide, index) => (
               <div
                 key={visibleThumbnails[index]}
-                className={`w-[170px] h-[220px] cursor-pointer rounded-lg overflow-hidden transition-transform ${
-                  visibleThumbnails[index] === currentSlide ? 'scale-120 shadow-lg border-5 border-white' : 'scale-100 opacity-60'
-                }`}
+                className={`w-[170px] h-[220px] cursor-pointer rounded-lg overflow-hidden transition-transform ${visibleThumbnails[index] === currentSlide ? 'scale-120 shadow-lg border-5 border-white' : 'scale-100 opacity-60'
+                  }`}
                 onClick={() => handleSlideChange(visibleThumbnails[index])}
               >
                 <img
@@ -137,11 +136,10 @@ const CustomerHome = () => {
             <button
               key={index}
               onClick={() => handleSlideChange(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentSlide 
-                  ? 'bg-white scale-150' 
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentSlide
+                  ? 'bg-white scale-150'
                   : 'bg-white/50 hover:bg-white/75'
-              }`}
+                }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}

@@ -22,7 +22,6 @@ def create_app(config_class=Config):
     from app.routes import (
         anomaly_routes,
         chatbot_routes,
-        login_routes,
         recommendation_routes,
         search_routes,
         sentiment_routes
@@ -31,7 +30,6 @@ def create_app(config_class=Config):
     # Register blueprints
     app.register_blueprint(anomaly_routes.bp)
     app.register_blueprint(chatbot_routes.bp)
-    app.register_blueprint(login_routes.bp)
     app.register_blueprint(recommendation_routes.bp)
     app.register_blueprint(search_routes.bp)
     app.register_blueprint(sentiment_routes.bp)

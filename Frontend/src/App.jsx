@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 import Login from './components/Login.jsx';
 import Signup from './components/Signup.jsx';
 import Navbar from './components/Navbar.jsx';
@@ -11,6 +12,23 @@ import SearchedProducts from './components/SearchedProducts.jsx';
 import Cart from './components/Cart';
 import Chatbot from './components/Chatbot.jsx';
 import AnomalyDetection from './components/AnomalyDetection.jsx';
+
+const ProtectedRoute = ({ children }) => {
+  const { user } = useAuth();
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
+const RedirectIfAuthenticated = ({ children }) => {
+  const { user } = useAuth();
+  if (user) {
+    const role = user.user_metadata?.role || 'customer';
+    return <Navigate to={role === 'seller' ? '/seller' : '/women'} replace />;
+  }
+  return children;
+};
 
 const AppContent = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -68,16 +86,16 @@ const AppContent = () => {
         />
         <main className="flex-grow pt-16 pb-24 md:pb-16">
           <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/seller" element={<SellerHome />} />
-            <Route path="/women" element={<CustomerHome />} />
-            <Route path="/men" element={<CustomerHome />} />
-            <Route path="/kids" element={<CustomerHome />} />
-            <Route path="/baby" element={<CustomerHome />} />
-            <Route path="/cart" element={<Cart cartItems={cartItems} updateQuantity={updateQuantity} removeFromCart={removeFromCart} />} />
-            <Route path="/search-results" element={<SearchedProducts addToCart={addToCart} />} />
-            <Route path="/anomaly-detection" element={<AnomalyDetection />} />
+            <Route path="/login" element={<RedirectIfAuthenticated><Login /></RedirectIfAuthenticated>} />
+            <Route path="/signup" element={<RedirectIfAuthenticated><Signup /></RedirectIfAuthenticated>} />
+            <Route path="/seller" element={<ProtectedRoute><SellerHome /></ProtectedRoute>} />
+            <Route path="/women" element={<ProtectedRoute><CustomerHome /></ProtectedRoute>} />
+            <Route path="/men" element={<ProtectedRoute><CustomerHome /></ProtectedRoute>} />
+            <Route path="/kids" element={<ProtectedRoute><CustomerHome /></ProtectedRoute>} />
+            <Route path="/baby" element={<ProtectedRoute><CustomerHome /></ProtectedRoute>} />
+            <Route path="/cart" element={<ProtectedRoute><Cart cartItems={cartItems} updateQuantity={updateQuantity} removeFromCart={removeFromCart} /></ProtectedRoute>} />
+            <Route path="/search-results" element={<ProtectedRoute><SearchedProducts addToCart={addToCart} /></ProtectedRoute>} />
+            <Route path="/anomaly-detection" element={<ProtectedRoute><AnomalyDetection /></ProtectedRoute>} />
             <Route path="/" element={<Navigate to="/login" replace />} />
           </Routes>
         </main>
@@ -90,9 +108,11 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <BrowserRouter>
-    <AppContent />
-  </BrowserRouter>
+  <AuthProvider>
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  </AuthProvider>
 );
 
 export default App;

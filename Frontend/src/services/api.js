@@ -27,20 +27,6 @@ const request = async (endpoint, options = {}) => {
 };
 
 export const api = {
-  login: (payload) =>
-    request("/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify(payload),
-    }),
-
-  register: (payload) =>
-    request("/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify(payload),
-    }),
-
   chat: (payload) =>
     request("/chat", {
       method: "POST",

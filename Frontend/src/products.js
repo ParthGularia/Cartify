@@ -29,7 +29,7 @@ export const contentData = async () => {
         "Washable Knit Ribbed Pants",
       ][index],
       description:
-        "Lorem ipsum dolor sit amet consectetur. Urna nisl felis estas orci. Iaculis dolor in tristique aliquet. Proin fringilla urna is piscing ante. Felis mi duis posuere nibh in phasellus cursus eu massa.",
+        "",
       btnColor: [
         "#FF0000",
         "#9A381B",
@@ -58,7 +58,7 @@ export const contentData = async () => {
         "Pleated Wide Pants",
       ][index],
       description:
-        "Lorem ipsum dolor sit amet consectetur. Urna nisl felis estas orci. Iaculis dolor in tristique aliquet. Proin fringilla urna is piscing ante. Felis mi duis posuere nibh in phasellus cursus eu massa.",
+        "",
       btnColor: [
         "#C64500",
         "#AE996F",
@@ -87,7 +87,7 @@ export const contentData = async () => {
         "GIRLS Flare Sleeve Dress",
       ][index],
       description:
-        "Lorem ipsum dolor sit amet consectetur. Urna nisl felis estas orci. Iaculis dolor in tristique aliquet. Proin fringilla urna is piscing ante. Felis mi duis posuere nibh in phasellus cursus eu massa.",
+        "",
       btnColor: [
         "#070093",
         "#A8876B",
@@ -116,7 +116,7 @@ export const contentData = async () => {
         "Soft Knit Beanie",
       ][index],
       description:
-        "Lorem ipsum dolor sit amet consectetur. Urna nisl felis estas orci. Iaculis dolor in tristique aliquet. Proin fringilla urna is piscing ante. Felis mi duis posuere nibh in phasellus cursus eu massa.",
+        "",
       btnColor: [
         "#34150D",
         "#007726",

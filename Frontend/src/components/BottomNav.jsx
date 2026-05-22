@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const BottomNav = ({ onSearchOpen }) => {
+  const { role } = useAuth();
   const navigate = useNavigate();
   const [activeIcon, setActiveIcon] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -43,37 +45,41 @@ const BottomNav = ({ onSearchOpen }) => {
         </Link>
       </div>
 
-      {/* Search */}
-      <div
-        className="flex flex-col items-center gap-1 cursor-pointer opacity-100 transition-opacity duration-300 active:opacity-100"
-        onClick={() => handleIconClick('search')}
-      >
-        <div className={`w-11 h-11 ${isSearchOpen ? 'bg-black' : 'bg-white'} rounded-full flex items-center justify-center shadow-md transition-transform duration-300 hover:scale-160 transform scale-150`}>
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            className={`transition-transform duration-300 ${activeIcon === 'search' ? 'scale-110' : ''}`}
+      {role !== 'seller' && (
+        <> {/* Search */}
+        <div
+          className="flex flex-col items-center gap-1 cursor-pointer opacity-100 transition-opacity duration-300 active:opacity-100"
+          onClick={() => handleIconClick('search')}
+        >
+          <div className={`w-11 h-11 ${isSearchOpen ? 'bg-black' : 'bg-white'} rounded-full flex items-center justify-center shadow-md transition-transform duration-300 hover:scale-160 transform scale-150`}
           >
-            <path
-              d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
-              stroke={isSearchOpen ? 'white' : 'black'}
-              fill="none"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M21 21L16.65 16.65"
-              stroke={isSearchOpen ? 'white' : 'black'}
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              className={`transition-transform duration-300 ${activeIcon === 'search' ? 'scale-110' : ''}`}
+            >
+              <path
+                d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+                stroke={isSearchOpen ? 'white' : 'black'}
+                fill="none"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M21 21L16.65 16.65"
+                stroke={isSearchOpen ? 'white' : 'black'}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
         </div>
-      </div>
+        </>
+      )}
 
       {/* Account */}
       <div className="flex flex-col items-center gap-1 cursor-pointer opacity-100 transition-opacity duration-300 active:opacity-100">

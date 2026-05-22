@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Check } from 'lucide-react';
-import { getOrders, clearOrders } from '../data/OrderDetails';
+import { supabase } from '../services/supabaseClient';
 
 const SellerHome = () => {
   const navigate = useNavigate();
@@ -11,9 +11,34 @@ const SellerHome = () => {
 
   useEffect(() => {
     // Fetch orders when component mounts
-    const fetchOrders = () => {
-      const allOrders = getOrders();
-      setOrders(allOrders);
+    const fetchOrders = async () => {
+      try {
+        const { data: dbOrders, error } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('status', 'active');
+          
+        console.log('Fetched dbOrders:', dbOrders, 'Error:', error);
+          
+        if (error) throw error;
+        
+        const formattedOrders = dbOrders.map(dbOrder => {
+          return {
+            id: dbOrder.id,
+            link: dbOrder.image_url || 'https://via.placeholder.com/150',
+            productDisplayName: dbOrder.product_name,
+            quantity: dbOrder.quantity,
+            baseColour: 'Standard',
+            articleType: 'Apparel',
+            usage: 'Casual',
+            price: dbOrder.quantity > 0 ? dbOrder.total_price / dbOrder.quantity : 0
+          };
+        });
+        
+        setOrders([{ items: formattedOrders }]);
+      } catch (err) {
+        console.error('Error fetching orders:', err);
+      }
     };
     fetchOrders();
 
@@ -24,12 +49,23 @@ const SellerHome = () => {
     }
   }, []);
 
-  const handleSendForPackaging = () => {
+  const handleSendForPackaging = async () => {
     // Show success popup
     setShowPackagingPopup(true);
     
+    try {
+      // Update all active orders to 'packaging' in Supabase
+      for (const orderItem of allOrderItems) {
+        await supabase
+          .from('orders')
+          .update({ status: 'packaging' })
+          .eq('id', orderItem.id);
+      }
+    } catch(err) {
+      console.error('Error updating order status:', err);
+    }
+    
     // Clear all orders and verified products
-    clearOrders();
     setOrders([]);
     setVerifiedProducts(new Set());
     localStorage.removeItem('verifiedProducts');

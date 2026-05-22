@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import signup from '../assets/signup.jpg';
-import { api } from '../services/api';
+import { supabase } from '../services/supabaseClient';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -42,14 +42,20 @@ const Signup = () => {
     }
 
     try {
-      await api.register({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        id: formData.id,
+      const { data, error: authError } = await supabase.auth.signUp({
+        email: formData.id,
         password: formData.password,
-        dateOfBirth: formData.dateOfBirth,
-        role: formData.role,
+        options: {
+          data: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            dateOfBirth: formData.dateOfBirth,
+            role: formData.role.toLowerCase(),
+          }
+        }
       });
+
+      if (authError) throw authError;
 
       // Navigate based on role from form data
       if (formData.role === 'customer') {

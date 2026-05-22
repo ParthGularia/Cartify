@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import login from '../assets/login.jpg';
-import { api } from '../services/api';
+import { supabase } from '../services/supabaseClient';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -28,32 +28,18 @@ const Login = () => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-
     try {
-      // Format the request body according to the API requirements
-      const requestBody = {
-        id: formData.id,
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: formData.id,
         password: formData.password,
-        role: formData.role,
-      };
+      });
 
-      console.log('Sending login request with body:', requestBody); // Debug log
+      if (authError) throw authError;
 
-      const data = await api.login(requestBody);
-      console.log('Login response data:', data); // Debug log
-
-      // Handle successful login
       console.log('Login successful:', data);
 
-      if (formData.rememberMe) {
-        localStorage.setItem('userRole', formData.role);
-        localStorage.setItem('userToken', data.token);
-        localStorage.setItem('userName', data.id);
-      }
-
-      // Navigate based on role from form data since it's not in the response
-      const userRole = formData.role.toLowerCase();
-      console.log('User role from form:', userRole); // Debug log
+      const userRole = data.user.user_metadata?.role || formData.role.toLowerCase();
+      console.log('User role:', userRole);
 
       if (userRole === 'customer') {
         navigate('/women');
