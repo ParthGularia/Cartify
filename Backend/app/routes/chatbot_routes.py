@@ -36,24 +36,9 @@ def chat_endpoint():
         if mongo is None or mongo.db is None:
             return jsonify({'error': 'Database connection not available'}), 500
         
-        # Check if user exists and determine role
-        user_exists = False
-        user_role = None
-        
-        # Check if user is a customer
-        customer = mongo.db.customers.find_one({'id': username})
-        if customer:
-            user_exists = True
-            user_role = 'customer'
-        else:
-            # Check if user is a seller
-            seller = mongo.db.sellers.find_one({'id': username})
-            if seller:
-                user_exists = True
-                user_role = 'seller'
-        
-        if not user_exists:
-            return jsonify({'error': 'User not found. Please register first.'}), 404
+        # User is already authenticated via Supabase on the frontend.
+        # We just use the username for conversation tracking.
+        user_role = 'customer'  # Default role; frontend can pass role if needed
         
         # Generate thread ID for conversation
         thread_id = f"{username}_main_thread"
@@ -89,24 +74,8 @@ def delete_chat_history():
         if mongo is None or mongo.db is None:
             return jsonify({'error': 'Database connection not available'}), 500
         
-        # Check if user exists and determine role
-        user_exists = False
-        user_role = None
-        
-        # Check if user is a customer
-        customer = mongo.db.customers.find_one({'id': username})
-        if customer:
-            user_exists = True
-            user_role = 'customer'
-        else:
-            # Check if user is a seller
-            seller = mongo.db.sellers.find_one({'id': username})
-            if seller:
-                user_exists = True
-                user_role = 'seller'
-        
-        if not user_exists:
-            return jsonify({'error': 'User not found. Please register first.'}), 404
+        # User is already authenticated via Supabase on the frontend.
+        user_role = 'customer'
         
         # Delete all conversations for the user
         deleted_count = delete_all_user_conversations(username)

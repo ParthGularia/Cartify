@@ -3,12 +3,14 @@ from dotenv import load_dotenv
 
 # Get the base directory (two levels up from this file)
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-dotenv_path = os.path.join(BASE_DIR, '.env')
+DOTENV_PATH = os.path.join(BASE_DIR, '.env')
+EMBEDDINGS_PATH = os.path.join(BASE_DIR, 'embeddings.pkl')
+FILENAMES_PATH = os.path.join(BASE_DIR, 'filenames.pkl')
 
 # Load environment variables from .env file if it exists
-if os.path.exists(dotenv_path):
-    load_dotenv(dotenv_path)
-    print('Loading environment variables from:', dotenv_path)
+if os.path.exists(DOTENV_PATH):
+    load_dotenv(DOTENV_PATH)
+    print('Loading environment variables from:', DOTENV_PATH)
 else:
     print('No .env file found, using system environment variables and defaults')
 
@@ -30,8 +32,7 @@ HF_EMBEDDINGS_FILENAME = 'embeddings.pkl'
 HF_FILENAMES_FILENAME = 'filenames.pkl'
 
 # File paths (will be set later)
-EMBEDDINGS_PATH = None
-FILENAMES_PATH = None
+
 
 # Data file paths
 RECOMMEND_DATA_PATH = os.path.join(BASE_DIR, 'recommend_data.csv')

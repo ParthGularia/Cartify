@@ -34,6 +34,7 @@ const AppContent = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [showAddPopup, setShowAddPopup] = useState(null); // holds product name for toast
   const location = useLocation();
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
 
@@ -57,6 +58,10 @@ const AppContent = () => {
       }
       return [...prev, { ...product, quantity: 1 }];
     });
+    // Show toast notification
+    setShowAddPopup(product.productDisplayName || product.name || 'Item');
+    // Hide after 2 seconds
+    setTimeout(() => setShowAddPopup(null), 2000);
   };
 
   const updateQuantity = (id, quantity) => {
@@ -98,6 +103,12 @@ const AppContent = () => {
             <Route path="/anomaly-detection" element={<ProtectedRoute><AnomalyDetection /></ProtectedRoute>} />
             <Route path="/" element={<Navigate to="/login" replace />} />
           </Routes>
+          {/* Add to Cart Toast */}
+          {showAddPopup && (
+            <div className="fixed top-20 right-4 bg-black text-white px-4 py-2 rounded shadow-md transition-opacity opacity-90">
+              Added "{showAddPopup}" to cart
+            </div>
+          )}
         </main>
         {!isAuthPage && <Search isOpen={isSearchOpen} onClose={handleSearchClose} />}
         {!isAuthPage && <BottomNav onSearchOpen={handleSearchOpen} />}

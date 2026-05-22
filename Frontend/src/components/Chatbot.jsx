@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, ShoppingBag, ShoppingCart, Package, Gift } from 'lucide-react';
 import { api } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const Chatbot = ({ isOpen, onClose }) => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -37,7 +39,7 @@ const Chatbot = ({ isOpen, onClose }) => {
     try {
       const payload = {
         message: userMessage.content,
-        username: "n@12.com"
+        username: user?.email || 'guest'
       };
       console.log('[Chatbot] POST /chat', payload);
       const data = await api.chat(payload);

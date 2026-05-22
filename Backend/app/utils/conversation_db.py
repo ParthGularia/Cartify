@@ -13,7 +13,7 @@ class ConversationDB:
     
     def get_conversation(self, user_id: str, thread_id: str) -> Optional[dict]:
         """Get a conversation by user_id and thread_id."""
-        if not self.collection:
+        if self.collection is None:
             return None
         return self.collection.find_one({
             'user_id': user_id,
@@ -22,7 +22,7 @@ class ConversationDB:
     
     def create_conversation(self, user_id: str, thread_id: str) -> bool:
         """Create a new conversation."""
-        if not self.collection:
+        if self.collection is None:
             return False
         try:
             self.collection.insert_one({
@@ -38,7 +38,7 @@ class ConversationDB:
     
     def get_messages(self, user_id: str, thread_id: str) -> List[BaseMessage]:
         """Get all messages for a conversation."""
-        if not self.collection:
+        if self.collection is None:
             return []
         
         conversation = self.get_conversation(user_id, thread_id)
@@ -62,7 +62,7 @@ class ConversationDB:
     
     def add_message(self, user_id: str, thread_id: str, message: BaseMessage) -> bool:
         """Add a message to a conversation."""
-        if not self.collection:
+        if self.collection is None:
             return False
         
         try:
@@ -85,7 +85,7 @@ class ConversationDB:
     
     def get_user_threads(self, user_id: str) -> List[str]:
         """Get all thread IDs for a user."""
-        if not self.collection:
+        if self.collection is None:
             return []
         
         conversations = self.collection.find(
@@ -97,7 +97,7 @@ class ConversationDB:
     
     def delete_conversation(self, user_id: str, thread_id: str) -> bool:
         """Delete a specific conversation."""
-        if not self.collection:
+        if self.collection is None:
             return False
         
         try:
@@ -111,7 +111,7 @@ class ConversationDB:
     
     def delete_all_user_conversations(self, user_id: str) -> int:
         """Delete all conversations for a user."""
-        if not self.collection:
+        if self.collection is None:
             return 0
         
         try:
@@ -122,7 +122,7 @@ class ConversationDB:
     
     def get_conversation_summary(self, user_id: str) -> List[dict]:
         """Get a summary of all conversations for a user."""
-        if not self.collection:
+        if self.collection is None:
             return []
         
         conversations = self.collection.find(

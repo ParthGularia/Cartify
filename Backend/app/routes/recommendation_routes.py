@@ -135,17 +135,7 @@ def get_recommendations():
         image_path = 'temp_image.jpg'
         image.save(image_path)
         
-        # Extract features from uploaded image
-        uploaded_features = extract_features(open(image_path, 'rb'))
-        
-        if uploaded_features is None:
-            return jsonify({
-                'error': 'Image analysis features are not available. Please install required ML dependencies.',
-                'recommendations': [],
-                'total_found': 0
-            }), 200
-        
-        # Stable recommendation IDs from model/fallback logic.
+        # Get recommendation IDs (extraction happens inside recommend_product_ids)
         with open(image_path, 'rb') as img_file:
             recommended_ids = recommend_product_ids(img_file, num_recommendations)
         print(f"[POST /recommend] Recommended IDs: {recommended_ids}")
